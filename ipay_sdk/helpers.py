@@ -1,6 +1,7 @@
-import hashlib
+from hashlib import sha1
 import logging
 import requests
+import hmac
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -16,6 +17,8 @@ def make_request(**kwargs):
         return req
 
 
-def hash_string(text):
-    """Hash string with sha1"""
-    return hashlib.sha1(text.encode()).hexdigest()
+def create_signature(secret_key, string):
+    """Hash string with hmac sha1"""
+    string_to_sign = string.encode('utf-8')
+    hashed = hmac.new(secret_key, string_to_sign, sha1)
+    return hashed.hexdigest()
