@@ -15,10 +15,7 @@ class Ipay:
 
     @staticmethod
     def create_list(**kwargs):
-        dict_list = []
-        for key, value in kwargs.items():
-            key_val = [key, value]
-            dict_list.append(key_val)
+        dict_list = [[key, value] for key, value in kwargs.items()]
         return [val[1] for val in dict_list]
 
     def initiator_request(self, **kwargs):
