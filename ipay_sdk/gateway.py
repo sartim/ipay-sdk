@@ -37,3 +37,24 @@ class Ipay:
         if response.status_code == 200:
             return response.json()
         return None
+
+    def card_payment_request(self, **kwargs):
+        keys = [
+            "vid", "curr", "cvv", "cardno", "month", "year", "cust_address",
+            "cust_postcode", "cust_city", "cust_stateprov", "cust_country",
+            "sid", "fname", "lname", "hash", "tokenize", "recurring"
+        ]
+        kwargs = validate_keys(keys, kwargs)
+        args = self.create_list(**kwargs)
+        secret_key = self.hash_key
+        string = self.concatenated_data_string(*args)
+        data = create_signature(secret_key, string, is_256=True)
+        params = dict(
+            method="POST",
+            url=constants.INITIATOR_URL,
+            data=data
+        )
+        response = make_request(**params)
+        if response.status_code == 200:
+            return response.json()
+        return None
