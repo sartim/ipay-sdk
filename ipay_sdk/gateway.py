@@ -1,4 +1,4 @@
-from ipay_sdk.helpers import make_request
+from ipay_sdk.helpers import make_request, create_signature, validate_keys
 from ipay_sdk.config import BaseConfig
 
 
@@ -9,14 +9,32 @@ class Ipay:
     def __init__(self, hash_key):
         self.hash_key = hash_key
 
-    def generated_hash(self):
-        pass
+    @staticmethod
+    def concatenated_data_string(*args):
+        return "".join(args)
 
-    def initiator_request(self):
+    @staticmethod
+    def create_list(**kwargs):
+        dict_list = []
+        for key, value in kwargs.items():
+            key_val = [key, value]
+            dict_list.append(key_val)
+        return [val[1] for val in dict_list]
+
+    def initiator_request(self, **kwargs):
+        keys = [
+            "live", "oid", "inv", "amount", "tel", "eml", "vid", "curr",
+            "p1", "p2", "p3", "p4", "cbk", "cst", "crl", "hash"
+        ]
+        kwargs = validate_keys(keys, kwargs)
+        args = self.create_list(**kwargs)
+        secret_key = self.hash_key
+        string = self.concatenated_data_string(*args)
+        data = create_signature(secret_key, string, is_256=True)
         params = dict(
             method="POST",
             url=constants.INITIATOR_URL,
-            data=self.generated_hash()
+            data=data
         )
         response = make_request(**params)
         if response.status_code == 200:
