@@ -21,17 +21,18 @@ class Ipay:
     def initiator_request(self, **kwargs):
         keys = [
             "live", "oid", "inv", "amount", "tel", "eml", "vid", "curr",
-            "p1", "p2", "p3", "p4", "cbk", "cst", "crl", "hash"
+            "p1", "p2", "p3", "p4", "cbk", "cst",
         ]
         kwargs = validate_keys(keys, kwargs)
         args = self.create_list(**kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
         data = create_signature(secret_key, string, is_256=True)
+        kwargs.update(hash=data)
         params = dict(
             method="POST",
             url=constants.INITIATOR_URL,
-            data=data
+            json=kwargs
         )
         response = make_request(**params)
         if response.status_code == 200:
