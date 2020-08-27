@@ -25,7 +25,6 @@ class BaseTest:
                                      {'name': 'AIRTEL', 'paybill': '510800'},
                                      {'name': 'EQUITEL', 'paybill': '510800'}],
                 'hash': '283cb5dfcf7a97aedd844cc0337c7525832ffc7974eba8f27cd1862db0339320'}
-        print(response)
         assert response["header_status"] == 200
         assert response["status"] == 1
         assert response["data"] == data
