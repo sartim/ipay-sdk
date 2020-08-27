@@ -11,10 +11,11 @@ class BaseTest:
         cls.test_email = "write2sartim@gmail.com"
         cls.instance = Ipay(cls.hash_key)
         cls.callback_url = "http://path/to/callback"
+        cls.currency = "KES"
         kwargs = dict(
             live=0, oid=cls.order_id, inv=cls.order_id,
             amount=10.00, tel=cls.test_number, eml=cls.test_email, vid=cls.vid,
-            curr="KES", p1="0", p2="123", p3="456", p4="789",
+            curr=cls.currency, p1="0", p2="123", p3="456", p4="789",
             cbk=cls.callback_url, cst=1
         )
         response = cls.instance.initiator_request(**kwargs)
