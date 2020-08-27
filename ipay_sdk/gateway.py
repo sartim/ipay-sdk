@@ -68,6 +68,11 @@ class Ipay:
             data=data
         )
         response = make_request(**params)
+        result = self.get_response(kwargs, response)
+        return result
+
+    @staticmethod
+    def get_response(kwargs, response):
         if response.status_code == 200:
             return response.json()
         if response.status_code == 400:
