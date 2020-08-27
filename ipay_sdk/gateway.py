@@ -1,4 +1,4 @@
-from ipay_sdk.helpers import make_request, create_signature, validate_keys
+from ipay_sdk.helpers import make_request, create_signature
 from ipay_sdk.config import BaseConfig
 
 constants = BaseConfig
@@ -14,15 +14,10 @@ class Ipay:
 
     @staticmethod
     def create_list(**kwargs):
-        dict_list = [[key, value] for key, value in kwargs.items()]
+        dict_list = [[key, str(value)] for key, value in kwargs.items()]
         return [val[1] for val in dict_list]
 
     def initiator_request(self, **kwargs):
-        keys = [
-            "live", "oid", "inv", "amount", "tel", "eml", "vid", "curr",
-            "p1", "p2", "p3", "p4", "cbk", "cst",
-        ]
-        kwargs = validate_keys(keys, kwargs)
         args = self.create_list(**kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
@@ -52,12 +47,6 @@ class Ipay:
         return None
 
     def card_payment_request(self, **kwargs):
-        keys = [
-            "vid", "curr", "cvv", "cardno", "month", "year", "cust_address",
-            "cust_postcode", "cust_city", "cust_stateprov", "cust_country",
-            "sid", "fname", "lname", "hash", "tokenize", "recurring"
-        ]
-        kwargs = validate_keys(keys, kwargs)
         args = self.create_list(**kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
