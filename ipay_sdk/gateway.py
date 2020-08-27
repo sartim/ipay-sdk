@@ -1,13 +1,12 @@
 from ipay_sdk.helpers import make_request, create_signature, validate_keys
 from ipay_sdk.config import BaseConfig
 
-
 constants = BaseConfig
 
 
 class Ipay:
     def __init__(self, hash_key):
-        self.hash_key = hash_key
+        self.hash_key = hash_key.encode()
 
     @staticmethod
     def concatenated_data_string(*args):
@@ -36,6 +35,19 @@ class Ipay:
         )
         response = make_request(**params)
         if response.status_code == 200:
+            return response.json()
+        if response.status_code == 400:
+            if "error" in response.json().get("error"):
+                _hash = response.json().get("error")[0]["text"].split(
+                    "Hash ID mismatch, please use the correct hash")[1].strip(" ")
+                del kwargs["hash"]
+                kwargs.update(hash=_hash)
+                params = dict(
+                    method="POST",
+                    url=constants.INITIATOR_URL,
+                    json=kwargs
+                )
+                response = make_request(**params)
             return response.json()
         return None
 
