@@ -32,7 +32,7 @@ def validate_keys(expected_keys, data):
     """
     payload = {}
     for key in expected_keys:
-        value = data.pop(key, False)
+        value = str(data.pop(key, False))
         if not value:
             raise TypeError("Missing value on key {0}".format(key))
         else:
