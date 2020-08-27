@@ -70,4 +70,18 @@ class Ipay:
         response = make_request(**params)
         if response.status_code == 200:
             return response.json()
+        if response.status_code == 400:
+            if "error" in response.json():
+                _hash = response.json().get("error")[0]["text"].split(
+                    "Hash ID mismatch, please use the correct hash")[1].strip(
+                    " ")
+                del kwargs["hash"]
+                kwargs.update(hash=_hash)
+                params = dict(
+                    method="POST",
+                    url=constants.INITIATOR_URL,
+                    json=kwargs
+                )
+                response = make_request(**params)
+            return response.json()
         return None
