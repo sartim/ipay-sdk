@@ -19,13 +19,13 @@ class BaseTest:
             cbk=cls.callback_url, cst=1
         )
         response = cls.instance.initiator_request(**kwargs)
-        data = {
-            'sid': '123DEM31518159851494053188904DEMO', 'oid': '1234CVK',
-            'amount': '10.0', 'account': 'AT0239105540M',
-            'payment_channels': [{'name': 'MPESA', 'paybill': '510800'},
-                                 {'name': 'AIRTEL', 'paybill': '510800'},
-                                 {'name': 'EQUITEL', 'paybill': '510800'}],
-            'hash': '022c72242321211acc1f3aa65243a20dac10c357f99d50257c397968cd09609c'}
+        data = {'sid': '123DEM31518159851494053188904DEMO', 'oid': '1234CVK',
+                'amount': '10', 'account': 'AT0239105540M',
+                'payment_channels': [{'name': 'MPESA', 'paybill': '510800'},
+                                     {'name': 'AIRTEL', 'paybill': '510800'},
+                                     {'name': 'EQUITEL', 'paybill': '510800'}],
+                'hash': '283cb5dfcf7a97aedd844cc0337c7525832ffc7974eba8f27cd1862db0339320'}
+        print(response)
         assert response["header_status"] == 200
         assert response["status"] == 1
         assert response["data"] == data
