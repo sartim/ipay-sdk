@@ -1,6 +1,7 @@
 # IPAY SDK
 
 [![Language](https://img.shields.io/badge/language-python-green.svg)](https://github.com/sartim/ipay-sdk)
+![Build Status](https://github.com/sartim/mpesa-sdk/workflows/build/badge.svg)
 
 Unofficial python ipay sdk for python devs.
 
