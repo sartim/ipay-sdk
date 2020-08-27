@@ -37,7 +37,7 @@ class Ipay:
         if response.status_code == 200:
             return response.json()
         if response.status_code == 400:
-            if "error" in response.json().get("error"):
+            if "error" in response.json():
                 _hash = response.json().get("error")[0]["text"].split(
                     "Hash ID mismatch, please use the correct hash")[1].strip(" ")
                 del kwargs["hash"]
