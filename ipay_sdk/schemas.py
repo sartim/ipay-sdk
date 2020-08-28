@@ -33,3 +33,8 @@ class CardPaymentSchema(Schema):
     cust_stateprov = fields.Str(required=True)
     fname = fields.Str(required=True)
     lname = fields.Str(required=True)
+
+
+class PaymentStatusSchema(Schema):
+    oid = fields.Str(required=True)
+    vid = fields.Str(required=True)
