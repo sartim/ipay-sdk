@@ -65,7 +65,6 @@ class Ipay:
         result = self.get_response(kwargs, response)
         return result
 
-    @staticmethod
     def payment_status_request(self, **kwargs):
         kwargs = self.validate_fields(PaymentStatusSchema, **kwargs)
         args = self.create_list(**kwargs)
@@ -78,7 +77,7 @@ class Ipay:
             data=data
         )
         response = make_request(**params)
-        result = self.get_response(kwargs, response)
+        result = self.get_response(response)
         return result
 
     @staticmethod
@@ -90,22 +89,5 @@ class Ipay:
         else:
             return data
 
-    @staticmethod
-    def get_response(kwargs, response):
-        if response.status_code == 200:
-            return response.json()
-        if response.status_code == 400:
-            if "error" in response.json():
-                _hash = response.json().get("error")[0]["text"].split(
-                    "Hash ID mismatch, please use the correct hash")[1].strip(
-                    " ")
-                del kwargs["hash"]
-                kwargs.update(hash=_hash)
-                params = dict(
-                    method="POST",
-                    url=constants.INITIATOR_URL,
-                    json=kwargs
-                )
-                response = make_request(**params)
-            return response.json()
-        return None
+    def get_response(self, response):
+        return response.json()
