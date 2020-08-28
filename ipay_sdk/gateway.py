@@ -1,7 +1,8 @@
 from marshmallow import ValidationError
 from ipay_sdk.helpers import make_request, create_signature
 from ipay_sdk.config import BaseConfig
-from ipay_sdk.schemas import InitiatorSchema, CardPaymentSchema
+from ipay_sdk.schemas import (
+    InitiatorSchema, CardPaymentSchema, PaymentStatusSchema)
 
 constants = BaseConfig
 
@@ -58,6 +59,22 @@ class Ipay:
         params = dict(
             method="POST",
             url=constants.INITIATOR_URL,
+            data=data
+        )
+        response = make_request(**params)
+        result = self.get_response(kwargs, response)
+        return result
+
+    @staticmethod
+    def payment_status_request(self, **kwargs):
+        kwargs = self.validate_fields(PaymentStatusSchema, **kwargs)
+        args = self.create_list(**kwargs)
+        secret_key = self.hash_key
+        string = self.concatenated_data_string(*args)
+        data = create_signature(secret_key, string, is_256=True)
+        params = dict(
+            method="POST",
+            url=constants.PAYMENT_STATUS_URL,
             data=data
         )
         response = make_request(**params)
