@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='ipay_sdk',
-    version='0.0.1',
+    version='0.0.2',
     description='Ipay SDK',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -14,6 +14,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
+        'marshmallow',
         'requests',
         'tox'
     ],
