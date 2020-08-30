@@ -1,5 +1,8 @@
+import json
+
+from hashlib import sha256
 from marshmallow import ValidationError
-from ipay_sdk.helpers import make_request, create_signature
+from ipay_sdk.helpers import make_request, hash_hmac
 from ipay_sdk.config import BaseConfig
 from ipay_sdk.schemas import (
     InitiatorSchema, CardPaymentSchema, PaymentStatusSchema)
@@ -16,16 +19,17 @@ class Ipay:
         return "".join(args)
 
     @staticmethod
-    def create_list(**kwargs):
-        dict_list = [[key, str(value)] for key, value in kwargs.items()]
+    def create_list(data):
+        dict_list = [[key, str(value)] for key, value in data.items()]
         return [val[1] for val in dict_list]
 
-    def initiator_request(self, **kwargs):
-        kwargs = self.validate_fields(InitiatorSchema, **kwargs)
-        args = self.create_list(**kwargs)
+    def initiator_request(self, kwargs):
+        self.validate_fields(
+            InitiatorSchema, **json.loads(json.dumps(kwargs)))
+        args = self.create_list(kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
-        data = create_signature(secret_key, string, is_256=True)
+        data = hash_hmac(secret_key, string, sha256)
         kwargs.update(hash=data)
         params = dict(
             method="POST",
@@ -50,31 +54,35 @@ class Ipay:
             return response.json()
         return None
 
-    def card_payment_request(self, **kwargs):
-        kwargs = self.validate_fields(CardPaymentSchema, **kwargs)
-        args = self.create_list(**kwargs)
+    def card_payment_request(self, kwargs):
+        self.validate_fields(
+            CardPaymentSchema, **json.loads(json.dumps(kwargs)))
+        args = self.create_list(kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
-        data = create_signature(secret_key, string, is_256=True)
+        data = hash_hmac(secret_key, string, sha256)
+        kwargs.update(hash=data)
         params = dict(
             method="POST",
-            url=constants.INITIATOR_URL,
-            data=data
+            url=constants.CARD_PAYMENT_URL,
+            json=kwargs
         )
         response = make_request(**params)
-        result = self.get_response(kwargs, response)
-        return result
+        print(response.json())
+        return response.json()
 
-    def payment_status_request(self, **kwargs):
-        kwargs = self.validate_fields(PaymentStatusSchema, **kwargs)
-        args = self.create_list(**kwargs)
+    def payment_status_request(self, kwargs):
+        self.validate_fields(
+            PaymentStatusSchema, **json.loads(json.dumps(kwargs)))
+        args = self.create_list(kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
-        data = create_signature(secret_key, string, is_256=True)
+        data = hash_hmac(secret_key, string, sha256)
+        kwargs.update(hash=data)
         params = dict(
             method="POST",
             url=constants.PAYMENT_STATUS_URL,
-            data=data
+            json=kwargs
         )
         response = make_request(**params)
         result = self.get_response(response)
@@ -89,5 +97,6 @@ class Ipay:
         else:
             return data
 
-    def get_response(self, response):
+    @staticmethod
+    def get_response(response):
         return response.json()

@@ -22,7 +22,7 @@ class CardPaymentSchema(Schema):
     sid = fields.Str(required=True)
     vid = fields.Str(required=True)
     curr = fields.Str(required=True)
-    cardn = fields.Str(required=True)
+    cardno = fields.Str(required=True)
     cvv = fields.Str(required=True)
     month = fields.Str(required=True)
     year = fields.Str(required=True)
