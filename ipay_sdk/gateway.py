@@ -1,7 +1,8 @@
 import json
 
+from hashlib import sha256
 from marshmallow import ValidationError
-from ipay_sdk.helpers import make_request, create_signature
+from ipay_sdk.helpers import make_request, hash_hmac
 from ipay_sdk.config import BaseConfig
 from ipay_sdk.schemas import (
     InitiatorSchema, CardPaymentSchema, PaymentStatusSchema)
@@ -28,7 +29,7 @@ class Ipay:
         args = self.create_list(kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
-        data = create_signature(secret_key, string, is_256=True)
+        data = hash_hmac(secret_key, string, sha256)
         kwargs.update(hash=data)
         params = dict(
             method="POST",
@@ -59,7 +60,7 @@ class Ipay:
         args = self.create_list(kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
-        data = create_signature(secret_key, string, is_256=True)
+        data = hash_hmac(secret_key, string, sha256)
         kwargs.update(hash=data)
         params = dict(
             method="POST",
@@ -76,7 +77,7 @@ class Ipay:
         args = self.create_list(kwargs)
         secret_key = self.hash_key
         string = self.concatenated_data_string(*args)
-        data = create_signature(secret_key, string, is_256=True)
+        data = hash_hmac(secret_key, string, sha256)
         kwargs.update(hash=data)
         params = dict(
             method="POST",
@@ -96,5 +97,6 @@ class Ipay:
         else:
             return data
 
-    def get_response(self, response):
+    @staticmethod
+    def get_response(response):
         return response.json()
