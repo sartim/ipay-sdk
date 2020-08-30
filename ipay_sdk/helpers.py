@@ -1,4 +1,3 @@
-from hashlib import sha1, sha256
 import logging
 import requests
 import hmac
@@ -17,8 +16,10 @@ def make_request(**kwargs):
         return req
 
 
-def create_signature(secret_key, string, is_256=False):
+def hash_hmac(secret_key, string, digest):
     """Create signature"""
     string_to_sign = string.encode('utf-8')
-    hashed = hmac.new(secret_key, string_to_sign, sha256 if is_256 else sha1)
-    return hashed.hexdigest()
+    hashed = hmac.HMAC(
+        secret_key, string_to_sign, digest).hexdigest()
+    return hashed
+
