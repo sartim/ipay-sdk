@@ -1,11 +1,12 @@
 import json
 
-from hashlib import sha256
+from hashlib import sha256, sha1
 from marshmallow import ValidationError
 from ipay_sdk.helpers import make_request, hash_hmac
 from ipay_sdk.config import BaseConfig
 from ipay_sdk.schemas import (
-    InitiatorSchema, CardPaymentSchema, PaymentStatusSchema)
+    InitiatorSchema, CardPaymentSchema, PaymentStatusSchema,
+    CheckoutPageSchema)
 
 constants = BaseConfig
 
@@ -22,6 +23,24 @@ class Ipay:
     def create_list(data):
         dict_list = [[key, str(value)] for key, value in data.items()]
         return [val[1] for val in dict_list]
+
+    def generate_checkout_page(self, kwargs):
+        self.validate_fields(
+            CheckoutPageSchema, **json.loads(json.dumps(kwargs)))
+        args = self.create_list(kwargs)
+        secret_key = self.hash_key
+        string = self.concatenated_data_string(*args)
+        data = hash_hmac(secret_key, string, sha1)
+        kwargs.update(hsh=data)
+        params = dict(
+            method="POST",
+            url=constants.GENERATE_CHECKOUT_URL,
+            data=kwargs
+        )
+        response = make_request(**params)
+        if response.status_code == 200:
+            return dict(html=response.text)
+        return None
 
     def initiator_request(self, kwargs):
         self.validate_fields(
